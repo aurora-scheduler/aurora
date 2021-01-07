@@ -23,7 +23,7 @@ import com.google.gson.JsonSyntaxException;
 import org.apache.aurora.GuavaUtils;
 import org.apache.aurora.scheduler.app.ServiceGroupMonitor;
 import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import static java.util.Objects.requireNonNull;
 class CuratorServiceGroupMonitor implements ServiceGroupMonitor {
   private static final Logger LOG = LoggerFactory.getLogger(CuratorServiceGroupMonitor.class);
 
-  private final PathChildrenCache groupCache;
+  private final CuratorCache groupCache;
   private final Predicate<String> memberSelector;
 
   /**
@@ -52,7 +52,7 @@ class CuratorServiceGroupMonitor implements ServiceGroupMonitor {
    *                       group members.  Here the name is just the `basename` of the node's full
    *                       ZooKeeper path.
    */
-  CuratorServiceGroupMonitor(PathChildrenCache groupCache, Predicate<String> memberSelector) {
+  CuratorServiceGroupMonitor(CuratorCache groupCache, Predicate<String> memberSelector) {
     this.groupCache = requireNonNull(groupCache);
     this.memberSelector = requireNonNull(memberSelector);
   }
@@ -60,10 +60,7 @@ class CuratorServiceGroupMonitor implements ServiceGroupMonitor {
   @Override
   public void start() throws MonitorException {
     try {
-      // NB: This blocks on an initial group population to emulate legacy ServerSetMonitor behavior;
-      // asynchronous population is an option using NORMAL or POST_INITIALIZED_EVENT StartModes
-      // though.
-      groupCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
+      groupCache.start();
     } catch (Exception e) {
       throw new MonitorException("Failed to begin monitoring service group.", e);
     }
@@ -86,7 +83,7 @@ class CuratorServiceGroupMonitor implements ServiceGroupMonitor {
 
   @Override
   public ImmutableSet<ServiceInstance> get() {
-    return groupCache.getCurrentData().stream()
+    return groupCache.stream()
         .filter(cd -> memberSelector.test(ZKPaths.getNodeFromPath(cd.getPath())))
         .map(this::extractServiceInstance)
         .filter(Optional::isPresent)

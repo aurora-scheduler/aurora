@@ -41,7 +41,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.listen.Listenable;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.BoundedExponentialBackoffRetry;
@@ -212,8 +212,7 @@ class CuratorServiceDiscoveryModule extends PrivateModule {
       ShutdownRegistry shutdownRegistry,
       CuratorFramework client) {
 
-    PathChildrenCache groupCache =
-        new PathChildrenCache(client, discoveryPath, true /* cacheData */);
+    CuratorCache groupCache = CuratorCache.builder(client, discoveryPath).build();
 
     // NB: Even though we do not start the serviceGroupMonitor here, the registered close shutdown
     // action is safe since the underlying PathChildrenCache close is tolerant of an un-started

@@ -78,7 +78,7 @@ For more details, please see https://issues.apache.org/jira/browse/AURORA-1169
   }
 
   ext.commonsLangRev = '3.11'
-  ext.curatorRev = '4.3.0'
+  ext.curatorRev = '5.1.0'
   ext.gsonRev = '2.3.1'
   ext.guavaRev = '29.0-jre'
   ext.guiceRev = '4.2.3'
@@ -89,14 +89,14 @@ For more details, please see https://issues.apache.org/jira/browse/AURORA-1169
   ext.jaxRsRev = '2.0'
   ext.junitRev = '4.12'
   ext.logbackRev = '1.2.3'
-  ext.nettyRev = '4.0.52.Final'
+  ext.nettyRev = '4.1.50.Final'
   ext.protobufRev = '3.5.1'
   ext.resteasyRev = '3.1.4.Final'
   ext.servletRev = '3.1.0'
   ext.slf4jRev = '1.7.30'
   ext.stringTemplateRev = '3.2.1'
   ext.thriftRev = '0.10.0'
-  ext.zookeeperRev = '3.4.8'
+  ext.zookeeperRev = '3.6.2'
 
   configurations.all {
     exclude module: 'junit-dep'
@@ -120,6 +120,11 @@ For more details, please see https://issues.apache.org/jira/browse/AURORA-1169
       force "com.google.guava:guava:${guavaRev}"
       force "com.google.protobuf:protobuf-java:${protobufRev}"
       force "io.netty:netty-handler:${nettyRev}"
+      force "io.netty:netty-transport-native-epoll:${nettyRev}"
+      force "io.netty:netty-buffer:${nettyRev}"
+      force "io.netty:netty-codec:${nettyRev}"
+      force "io.netty:netty-common:${nettyRev}"
+      force "io.netty:netty-transport:${nettyRev}"
       force "junit:junit:${junitRev}"
       force "org.apache.thrift:libthrift:${thriftRev}"
       force "org.apache.zookeeper:zookeeper:${zookeeperRev}"
